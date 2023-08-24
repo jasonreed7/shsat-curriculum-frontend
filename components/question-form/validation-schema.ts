@@ -1,5 +1,3 @@
-"use client";
-
 import {
   QuestionType,
   Section,
@@ -18,12 +16,13 @@ const QuestionBaseSchema = z.object({
 
 const ImageQuestionSchema = QuestionBaseSchema.extend({
   // see https://github.com/react-hook-form/react-hook-form/issues/127#issuecomment-963884695
+  // and https://github.com/colinhacks/zod/issues/387
   questionImages: z
-    .instanceof(FileList)
-    .refine((val) => val.length > 0, "At least one file is required"),
+    .custom<FileList>()
+    .refine((files) => files?.length > 0, "At least one file is required"),
   answerImages: z
-    .instanceof(FileList)
-    .refine((val) => val.length > 0, "At least one file is required"),
+    .custom<FileList>()
+    .refine((files) => files?.length > 0, "At least one file is required"),
 });
 
 const FillInQuestionSchema = QuestionBaseSchema.extend({
