@@ -36,6 +36,10 @@ import {
 } from "./constants";
 import { QuestionFormSchema } from "./validation-schema";
 
+interface QuestionFormProps {
+  officialTests: OfficialTest[];
+}
+
 function getSectionChoices(questionType: QuestionType): Section[] {
   if (questionType && SECTION_CHOICE_MAP[questionType]) {
     return SECTION_CHOICE_MAP[questionType]!;
@@ -58,7 +62,7 @@ function getSubSectionChoices(
   return [];
 }
 
-export default function QuestionForm() {
+export default function QuestionForm({ officialTests }: QuestionFormProps) {
   // 1. Define your form.
   const form = useForm<z.infer<typeof QuestionFormSchema>>({
     resolver: zodResolver(QuestionFormSchema),
@@ -137,8 +141,11 @@ export default function QuestionForm() {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  <SelectItem value="1">2022 Form A</SelectItem>
-                  <SelectItem value="2">2022 Form B</SelectItem>
+                  {officialTests.map((officialTest, index) => (
+                    <SelectItem value={officialTest.id.toString()} key={index}>
+                      {officialTest.year} Form {officialTest.form}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
               <FormDescription>The official test.</FormDescription>
@@ -197,11 +204,11 @@ export default function QuestionForm() {
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                {...field}
+                value={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a question type" />
+                    <SelectValue placeholder="Select a test section" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -214,7 +221,7 @@ export default function QuestionForm() {
                   )}
                 </SelectContent>
               </Select>
-              <FormDescription>The question type.</FormDescription>
+              <FormDescription>The test section.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
@@ -228,11 +235,11 @@ export default function QuestionForm() {
               <Select
                 onValueChange={field.onChange}
                 defaultValue={field.value}
-                {...field}
+                value={field.value}
               >
                 <FormControl>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a sub-section type" />
+                    <SelectValue placeholder="Select a test sub-section" />
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
@@ -245,7 +252,7 @@ export default function QuestionForm() {
                   )}
                 </SelectContent>
               </Select>
-              <FormDescription>The sub-section type.</FormDescription>
+              <FormDescription>The test sub-section.</FormDescription>
               <FormMessage />
             </FormItem>
           )}
